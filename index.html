@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>GitHub 账号登记</title>
+<style>
+  :root {
+    --bg: #f6f8fa; --card: #ffffff; --text: #1f2328; --muted: #656d76;
+    --border: #d0d7de; --accent: #1f883d; --accent-hover: #1a7f37;
+    --error: #cf222e; --error-bg: #ffebe9; --ok-bg: #dafbe1; --warn-bg: #fff8c5;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0d1117; --card: #161b22; --text: #e6edf3; --muted: #8d96a0;
+      --border: #30363d; --accent: #238636; --accent-hover: #2ea043;
+      --error: #f85149; --error-bg: #3c1618; --ok-bg: #12261e; --warn-bg: #3a2e05;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; min-height: 100vh; background: var(--bg); color: var(--text);
+    font: 16px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+    display: flex; align-items: flex-start; justify-content: center;
+    padding: 32px 16px calc(32px + env(safe-area-inset-bottom));
+  }
+  .card {
+    width: 100%; max-width: 420px; background: var(--card);
+    border: 1px solid var(--border); border-radius: 12px; padding: 28px 22px;
+  }
+  .logo { width: 40px; height: 40px; fill: var(--text); display: block; margin-bottom: 12px; }
+  h1 { font-size: 22px; margin: 0 0 4px; }
+  .sub { color: var(--muted); margin: 0 0 24px; font-size: 14px; }
+  label { display: block; font-weight: 600; font-size: 14px; margin-bottom: 6px; }
+  .field { margin-bottom: 18px; }
+  input {
+    width: 100%; font-size: 16px; /* >=16px 防止 iOS 聚焦时自动放大 */
+    padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px;
+    background: var(--bg); color: var(--text); outline: none;
+  }
+  input:focus { border-color: #0969da; box-shadow: 0 0 0 3px rgba(9,105,218,.25); }
+  .hint { font-size: 12px; color: var(--muted); margin-top: 6px; }
+  .preview { display: none; align-items: center; gap: 10px; margin-top: 10px; font-size: 14px; }
+  .preview img { width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--border); }
+  button {
+    width: 100%; font-size: 16px; font-weight: 600; padding: 12px; border: 0;
+    border-radius: 8px; background: var(--accent); color: #fff; cursor: pointer;
+  }
+  button:hover:not(:disabled) { background: var(--accent-hover); }
+  button:disabled { opacity: .6; cursor: not-allowed; }
+  .msg { display: none; margin-top: 16px; padding: 10px 12px; border-radius: 8px; font-size: 14px; }
+  .msg.error { display: block; background: var(--error-bg); color: var(--error); }
+  .msg.warn  { display: block; background: var(--warn-bg); }
+  .done { display: none; text-align: center; padding: 12px 0; }
+  .done .check { font-size: 48px; line-height: 1; }
+  .done h2 { margin: 12px 0 6px; font-size: 20px; }
+  .done p { color: var(--muted); margin: 0; font-size: 14px; }
+</style>
+</head>
+<body>
+<main class="card">
+  <svg class="logo" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+
+  <section id="formView">
+    <h1>GitHub 账号登记</h1>
+    <p class="sub">填写后用于把你加入团队 GitHub 组织。</p>
+
+    <form id="form" novalidate>
+      <div class="field">
+        <label for="username">GitHub 用户名</label>
+        <input id="username" name="username" autocomplete="username" autocapitalize="off"
+               autocorrect="off" spellcheck="false" placeholder="例如 octocat" required>
+        <div class="hint">是登录名，不是昵称。打开 GitHub 个人主页，网址 github.com/ 后面那段就是。</div>
+        <div class="preview" id="preview"><img id="avatar" alt=""><span id="previewText"></span></div>
+      </div>
+      <div class="field">
+        <label for="realname">真实姓名</label>
+        <input id="realname" name="realname" autocomplete="name" placeholder="例如 张三" required maxlength="50">
+      </div>
+      <button id="submit" type="submit">提交</button>
+      <div class="msg" id="msg" role="alert"></div>
+    </form>
+  </section>
+
+  <section class="done" id="doneView">
+    <div class="check">✅</div>
+    <h2>提交成功</h2>
+    <p id="doneText"></p>
+  </section>
+</main>
+
+<script>
+  // ===== 配置：Supabase 项目 Settings → API 里复制 =====
+  // publishable / anon key 本身就是设计成放在前端公开的，
+  // 安全靠数据库 RLS 策略（只允许 insert，不允许读），见 README。
+  const SUPABASE_URL = "https://qoesqhzelmrrfhflhnex.supabase.co";
+  const SUPABASE_KEY = "sb_publishable_mfpspJe1j2zg-raico6uhQ_9oEiFfy4";
+  const TABLE = "signups";
+  // =====================================================
+
+  const $ = (id) => document.getElementById(id);
+  const form = $("form"), btn = $("submit"), msg = $("msg");
+  const userInput = $("username"), nameInput = $("realname");
+  const preview = $("preview"), avatar = $("avatar"), previewText = $("previewText");
+
+  // GitHub 用户名规则：字母数字和单个连字符，不能以连字符开头/结尾，最长 39
+  const USERNAME_RE = /^[a-z\d](?:[a-z\d]|-(?=[a-z\d])){0,38}$/i;
+
+  function showMsg(text, kind = "error") { msg.textContent = text; msg.className = "msg " + kind; }
+  function clearMsg() { msg.className = "msg"; msg.textContent = ""; }
+
+  // 允许粘贴 @octocat 或 https://github.com/octocat 这类写法
+  function normalizeUsername(raw) {
+    return raw.trim()
+      .replace(/^(https?:\/\/)?(www\.)?github\.com\//i, "")
+      .replace(/^@/, "")
+      .replace(/[\/?#].*$/, "");
+  }
+
+  if (!SUPABASE_URL || !SUPABASE_KEY) {
+    showMsg("页面还没配置数据库地址（SUPABASE_URL / SUPABASE_KEY），暂时无法提交。", "warn");
+    btn.disabled = true;
+  }
+
+  // 查 GitHub 公开 API 确认用户名存在，顺便显示头像让员工自己核对。
+  // 未登录调用按 IP 限 60 次/小时，会场共用一个出口 IP 可能被限流：
+  // 返回 "unknown" 时不拦截提交，只有明确 404 才拦。
+  async function checkGithubUser(username) {
+    try {
+      const res = await fetch("https://api.github.com/users/" + encodeURIComponent(username));
+      if (res.status === 404) return { status: "missing" };
+      if (!res.ok) return { status: "unknown" };
+      const data = await res.json();
+      return { status: "ok", login: data.login, name: data.name, avatar: data.avatar_url };
+    } catch {
+      return { status: "unknown" };
+    }
+  }
+
+  let checkTimer;
+  userInput.addEventListener("input", () => {
+    clearMsg();
+    clearTimeout(checkTimer);
+    preview.style.display = "none";
+    const u = normalizeUsername(userInput.value);
+    if (!USERNAME_RE.test(u)) return;
+    checkTimer = setTimeout(async () => {
+      const r = await checkGithubUser(u);
+      if (u !== normalizeUsername(userInput.value)) return; // 输入已变化
+      if (r.status === "ok") {
+        avatar.src = r.avatar + "&s=64";
+        previewText.textContent = r.login + (r.name ? "（" + r.name + "）" : "");
+        preview.style.display = "flex";
+      } else if (r.status === "missing") {
+        showMsg("GitHub 上找不到用户「" + u + "」，请检查拼写。");
+      }
+    }, 600);
+  });
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    clearMsg();
+
+    const username = normalizeUsername(userInput.value);
+    const realname = nameInput.value.trim();
+
+    if (!username) return showMsg("请填写 GitHub 用户名。");
+    if (!USERNAME_RE.test(username)) return showMsg("用户名格式不对：只能包含字母、数字和连字符 -。");
+    if (!realname) return showMsg("请填写真实姓名。");
+
+    btn.disabled = true;
+    btn.textContent = "提交中…";
+
+    try {
+      const gh = await checkGithubUser(username);
+      if (gh.status === "missing") {
+        showMsg("GitHub 上找不到用户「" + username + "」，请检查拼写。");
+        return;
+      }
+      const finalUsername = gh.status === "ok" ? gh.login : username; // 用 GitHub 返回的标准大小写
+
+      const res = await fetch(SUPABASE_URL.replace(/\/$/, "") + "/rest/v1/" + TABLE, {
+        method: "POST",
+        headers: {
+          "apikey": SUPABASE_KEY,
+          "Content-Type": "application/json",
+          "Prefer": "return=minimal",
+        },
+        body: JSON.stringify({ github_username: finalUsername, real_name: realname }),
+      });
+
+      if (res.status === 409) {
+        showMsg("用户名「" + finalUsername + "」已经登记过了，不用重复提交。如需修改请联系会议组织者。");
+        return;
+      }
+      if (!res.ok) {
+        const text = await res.text();
+        showMsg("提交失败（HTTP " + res.status + "）：" + text.slice(0, 200));
+        return;
+      }
+
+      $("formView").style.display = "none";
+      $("doneText").textContent = realname + " · github.com/" + finalUsername;
+      $("doneView").style.display = "block";
+    } catch (err) {
+      showMsg("网络异常，提交失败：" + err.message + "。请检查网络后重试。");
+    } finally {
+      btn.disabled = false;
+      btn.textContent = "提交";
+    }
+  });
+</script>
+</body>
+</html>
